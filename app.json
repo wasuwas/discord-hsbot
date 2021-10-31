@@ -1,0 +1,22 @@
+{
+  "name": "discord-hsbot",
+  "description": "プライベートのdiscordサーバ用の色々お試しBOT",
+  "repository": "https://github.com/wasuwasu/discord-hsbot",
+  "keywords": [
+    "Discord.js",
+    "Node.js",
+    "TypeScript",
+    "Discord",
+    "Bot"
+  ],
+  "formation": {
+    "web": {
+      "quantity": 0,
+      "size": "free"
+    },
+    "worker": {
+      "quantity": 1,
+      "size": "free"
+    }
+  }
+}

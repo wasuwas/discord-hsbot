@@ -1,17 +1,17 @@
-# discord.js TypeScript テンプレート
+# discord-hsbot
 
-[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
+## Description
+For private discord server, hobby use multi functional bot.
 
-Visual Studio Code を使用することを推奨します。
+# Feature list
+- Push talk to Google home by slash commands.
 
-## スクリプト
+## Script
 
 ### start
 
-`npm run compile` を先に実行しないとエラーが出るよ！
-
-```bash
-npm start
+```
+npm run compile && npm start
 ```
 
 ### start:dev
