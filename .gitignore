@@ -64,4 +64,4 @@ typings/
 dist/
 
 # secret
-app.json
+.env
