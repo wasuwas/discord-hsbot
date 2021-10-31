@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import { ApplicationCommandData, Client, Intents } from 'discord.js'
+import {Client, Intents } from 'discord.js'
 import { setActivityOnline } from './activity';
-import { getDiscordTokenFromLocal } from './credentials'
 import {defineSlashCommand, interactToCommands} from './slashCommand'
+require('dotenv').config();
 const client = new Client({
   intents: [
     Intents.FLAGS.GUILDS,
@@ -26,7 +26,7 @@ function print(message): void {
 const discordMaxStringsLength = 2000;
 function cutDiscordCharLengthLimit(text: string): string{
   if(text.length > discordMaxStringsLength){
-    return text.slice(0,2000);
+    return text.slice(0,discordMaxStringsLength);
   } else {
     return text;
   }
@@ -59,7 +59,6 @@ client.on('ready', () => {
   setActivityOnline(client)
 });
 
-const botChannelId = "904329644168347688"
 client.on('message', message => {
   console.log(JSON.stringify(message))
   if (message.author.bot) {
@@ -67,7 +66,7 @@ client.on('message', message => {
   }
 
   // botのチャネル以外のメッセージイベントは無視する
-  if (message.channel.id !== botChannelId) {
+  if (message.channel.id !== process.env.BOT_TEST_CHANNEL_ID) {
     return;
   }
   message.channel.send({
@@ -82,7 +81,7 @@ client.on("messageCreate", (message) => {
     return;
   }
   // botのチャネル以外のメッセージイベントは無視する
-  if (message.channel.id !== botChannelId) {
+  if (message.channel.id !== process.env.BOT_TEST_CHANNEL_ID) {
     return;
   }
   console.log(message.content);
@@ -128,4 +127,4 @@ client.on("interactionCreate", async (interaction) => {
   await interactToCommands(interaction);
 });
 
-client.login(getDiscordTokenFromLocal())
+client.login(process.env.DISCORD_BOT_TOKEN)

@@ -1,7 +1,6 @@
 import { ApplicationCommandData, Client, Interaction } from "discord.js";
 import axiosBase from 'axios';
-
-const guildId = '904276427757727784';
+require('dotenv').config();
 export async function defineSlashCommand(client: Client): Promise<void> {
     const data: ApplicationCommandData[] = [{
         name: "googlehome_yomiage",
@@ -14,7 +13,7 @@ export async function defineSlashCommand(client: Client): Promise<void> {
                 required: true
             }]
     }];
-    const command = await client.application?.commands.set(data, guildId)
+    const command = await client.application?.commands.set(data, process.env.SERVER_GUILD_ID)
         .then(console.log)
         .catch(console.error);
     console.log("Ready!");
@@ -22,17 +21,17 @@ export async function defineSlashCommand(client: Client): Promise<void> {
 
 export function speakByGoogleHome(message: string): void {
     const axios = axiosBase.create({
-        //curl -X POST -H "Content-Type:application/json" -d '{"text":"Google Home"}'http://192.168.0.18:8091/google-home-notifier
-        baseURL: 'http://192.168.0.18:8091', // バックエンドB のURL:port を指定する
+        baseURL: process.env.GOOGLEHOME_NOTIFIER_URL,
         headers: {
             'Content-Type': 'application/json'
         },
         responseType: 'json'
     });
     axios.post('/google-home-notifier',
-        { "text": message }).then(function (response) {
+        { "text": message })
+        .then(function (response) {
             console.log(response.data);
-        })
+        });
 }
 
 export async function interactToCommands(interaction: Interaction): Promise<void> {
