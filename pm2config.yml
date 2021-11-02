@@ -1,0 +1,12 @@
+name: "hsbot"
+# script: "tsc -p .&& ./dist/index.js"
+script: "ts-node ./src/index.ts"
+exec_mode: "fork"
+instances: 1
+log-date-format: "YYYY-MM-DD HH:mm Z"
+watch: true
+source_map_support: true
+combine_logs: true
+ignore_watch : ["node_modules"]
+watch_delay: 1000
+# pre-setup: "tsc -p ."
