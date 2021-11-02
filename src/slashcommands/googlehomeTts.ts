@@ -1,5 +1,6 @@
 import { ApplicationCommandData, Client, Interaction } from "discord.js";
 import axiosBase from 'axios';
+import { logger } from "../logging";
 require('dotenv').config();
 export async function defineSlashCommand(client: Client): Promise<void> {
     const data: ApplicationCommandData[] = [{
@@ -13,10 +14,9 @@ export async function defineSlashCommand(client: Client): Promise<void> {
                 required: true
             }]
     }];
-    const command = await client.application?.commands.set(data, process.env.SERVER_GUILD_ID)
-        .then(console.log)
+    await client.application?.commands.set(data, process.env.SERVER_GUILD_ID)
+        // .then(console.log)
         .catch(console.error);
-    console.log("Ready!");
 }
 
 export function speakByGoogleHome(message: string): void {
@@ -30,7 +30,7 @@ export function speakByGoogleHome(message: string): void {
     axios.post('/google-home-notifier',
         { "text": message })
         .then(function (response) {
-            console.log(response.data);
+            logger.debug(response.data);
         });
 }
 
@@ -42,7 +42,7 @@ export async function interactToCommands(interaction: Interaction): Promise<void
         await interaction.reply('コマンドを実行しました');
         speakByGoogleHome(interaction.options.data[0].value as string)
     }
-    console.log("-----------------------------")
-    console.log(JSON.stringify(interaction.options));
-    console.log("-----------------------------")
+    logger.debug("-----------------------------")
+    logger.debug(JSON.stringify(interaction.options));
+    logger.debug("-----------------------------")
 }

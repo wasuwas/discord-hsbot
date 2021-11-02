@@ -2,7 +2,10 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import {Client, Intents } from 'discord.js'
 import { setActivityOnline } from './activity';
-import {defineSlashCommand, interactToCommands} from './slashCommand'
+import { logger } from './logging';
+import {onMessageEvent } from './messageHandler';
+import {defineSlashCommand, interactToCommands} from './slashcommands/googlehomeTts'
+import { onVoiceStateUpdateEvent } from './voiceEventHandler';
 require('dotenv').config();
 const client = new Client({
   intents: [
@@ -19,112 +22,29 @@ const client = new Client({
   ]
 });
 
-function print(message): void {
-  console.log(Object.keys({ message })[0] + ":" + message);
-}
-
-const discordMaxStringsLength = 2000;
-function cutDiscordCharLengthLimit(text: string): string{
-  if(text.length > discordMaxStringsLength){
-    return text.slice(0,discordMaxStringsLength);
-  } else {
-    return text;
-  }
-}
-
 client.on('ready', () => {
-  console.log(`Logged in as ${client.user.tag}!`);
-  console.log('bot is ready!');
+  logger.info(`Logged in as ${client.user.tag}!`);
+  logger.info('bot is ready!');
 
   defineSlashCommand(client);
-
   //Get All channel Id
-  console.log("-----channel----------");
-  client.channels.cache.forEach(channel => {
-    console.log(JSON.stringify(channel, undefined, 2));
-  });
-  console.log("-----channel----------");
-  console.log("-------guild--------");
-  client.guilds.cache.forEach(guild => {
-    console.log(JSON.stringify(guild, undefined, 2));
-  });
-  console.log("-------guild--------");
+  logger.debug("-----channel----------");
+  logger.debug(JSON.stringify(client.channels.cache, undefined, 2));
+  logger.debug("-----channel----------");
+  logger.debug("-------guild--------");
+  logger.debug(JSON.stringify(client.guilds.cache, undefined, 2));
+  logger.debug("-------guild--------");
+  logger.debug("-------users--------");
+  logger.debug(JSON.stringify(client.users.cache, undefined, 2));
+  logger.debug("-------users--------");
 
-  console.log("-------users--------");
-  client.users.cache.forEach(users => {
-    console.log(JSON.stringify(users, undefined, 2));
-  })
-  console.log("-------users--------");
-
-  setActivityOnline(client)
-});
-
-client.on('message', message => {
-  console.log(JSON.stringify(message))
-  if (message.author.bot) {
-    return;
-  }
-
-  // botのチャネル以外のメッセージイベントは無視する
-  if (message.channel.id !== process.env.BOT_TEST_CHANNEL_ID) {
-    return;
-  }
-  message.channel.send({
-    content: `${cutDiscordCharLengthLimit("on message："+ JSON.stringify(message, undefined, 2))}`,
-    reply: { messageReference: message.id },
-    // allowedMentions: { repliedUser: false }, // 4
-  });
-});
-
-client.on("messageCreate", (message) => {
-  if (message.author.bot) {
-    return;
-  }
-  // botのチャネル以外のメッセージイベントは無視する
-  if (message.channel.id !== process.env.BOT_TEST_CHANNEL_ID) {
-    return;
-  }
-  console.log(message.content);
-  message.channel.send({
-    content: `${cutDiscordCharLengthLimit("on message："+ JSON.stringify(message, undefined, 2))}`,
-    reply: { messageReference: message.id },
-    // allowedMentions: { repliedUser: false }, // 4
-  });
-});
-
-function onVoiceStateUpdate(oldState, newState): void {
-  if (oldState.channelID === newState.channelID) {
-    return;
-  }
-
-  if (oldState.channelID != null) {
-    const oldChannel = oldState.guild.channels.cache.get(oldState.channelID);
-    if (oldChannel.members.size == 0) {
-      console.log("通話終了");
-    } else {
-      console.log("チャンネル退出：" + oldChannel, newState.member);
-    }
-  }
-
-  if (newState.channelID != null) {
-    const newChannel = newState.guild.channels.cache.get(newState.channelID);
-    if (newChannel.members.size == 1) {
-      console.log("通話開始:" + newChannel, newState.member);
-    } else {
-      console.log("通話開始、2人目join:" + newChannel, newState.member);
-    }
-    //通話開始時になんかする
-  }
-}
-
-client.on('voiceStateUpdate', (oldMember, newMember) => {
-  console.log(JSON.stringify(oldMember));
-  console.log(JSON.stringify(newMember));
-  onVoiceStateUpdate(oldMember, newMember)
+  setActivityOnline(client);
+  onMessageEvent(client);
+  onVoiceStateUpdateEvent(client);
 });
 
 client.on("interactionCreate", async (interaction) => {
   await interactToCommands(interaction);
 });
 
-client.login(process.env.DISCORD_BOT_TOKEN)
+client.login(process.env.DISCORD_BOT_TOKEN);
