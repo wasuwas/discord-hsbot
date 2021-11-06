@@ -23,7 +23,11 @@
 		{
             "label": "Typescipt compile",
             "type": "shell",
-            "command": "tsc -p ."
+            "command": "tsc -p .",
+			"presentation": {
+				"reveal": "silent",
+				"close": true
+			}
         }
 	]
 }
