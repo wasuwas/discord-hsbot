@@ -2,6 +2,7 @@ import { ApplicationCommandData, Client, Interaction } from "discord.js";
 import axiosBase from 'axios';
 import { logger } from "../logging";
 require('dotenv').config();
+
 export async function defineSlashCommand(client: Client): Promise<void> {
     const data: ApplicationCommandData[] = [{
         name: "googlehome_yomiage",
@@ -15,7 +16,6 @@ export async function defineSlashCommand(client: Client): Promise<void> {
             }]
     }];
     await client.application?.commands.set(data, process.env.SERVER_GUILD_ID)
-        // .then(console.log)
         .catch(console.error);
 }
 
