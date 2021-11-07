@@ -7,7 +7,7 @@ on:
     branches: [master]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -18,9 +18,6 @@ jobs:
           node-version: "16.x"
       - name: Install modules
         run: npm install
-  test:
-    runs-on: ubuntu-latest
-    steps:
       - name: lint
         run: npm run lint
       - name: test
