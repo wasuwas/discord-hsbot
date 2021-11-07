@@ -1,5 +1,5 @@
 import { generateDependencyReport} from '@discordjs/voice';
-import { Client, Intents, MessageEmbed, TextChannel, User } from 'discord.js'
+import { Client, Intents, TextChannel,} from 'discord.js'
 import { setActivityOnline } from './activity';
 import { logger } from './logging';
 import { onMessageEvent } from './messageHandler';
@@ -81,6 +81,7 @@ client.on("guildMemberSpeaking", function (member, speaking) {
 PARAMETER              TYPE                   DESCRIPTION
 messageReaction        MessageReaction        The reaction object
 user                   User                   The user that applied the emoji or reaction emoji     */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 client.on("messageReactionAdd", function (messageReaction, _user) {
   console.log(`a reaction is added to a message`);
   console.log(JSON.stringify(messageReaction, undefined, 2));
