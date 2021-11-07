@@ -1,20 +1,23 @@
 {
-    // IntelliSense を使用して利用可能な属性を学べます。
-    // 既存の属性の説明をホバーして表示します。
-    // 詳細情報は次を確認してください: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "pwa-node",
+            "type": "node",
             "request": "launch",
-            "name": "Launch Program",
+            "name": "debug nodejs",
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}\\dist\\index.js",
+            "program": "${workspaceFolder}/dist/index.js",
             "outFiles": [
                 "${workspaceFolder}/**/*.js"
-            ],"preLaunchTask": "Typescipt compile",
+            ],
+            "runtimeExecutable":"/home/wasuwasu/.nvm/versions/node/v16.13.0/bin/node",
+            "preLaunchTask": "tsc:build",
+            "smartStep":true,
+            "cwd": "${workspaceFolder}",
+            "envFile": "${workspaceFolder}/.env",
+            "console": "integratedTerminal",
         }
     ]
 }

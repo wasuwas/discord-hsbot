@@ -8,7 +8,11 @@
 				"$tsc"
 			],
 			"group": "build",
-			"label": "tsc: ビルド - tsconfig.json"
+			"label": "tsc:build",
+			"presentation": {
+				"reveal": "silent",
+				"close": true
+			}
 		},
 		{
 			"type": "typescript",
@@ -18,7 +22,7 @@
 				"$tsc-watch"
 			],
 			"group": "build",
-			"label": "tsc: ウォッチ - tsconfig.json"
+			"label": "tsc: watch_tsconfig.json"
 		},
 		{
             "label": "Typescipt compile",
