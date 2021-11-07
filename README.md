@@ -1,5 +1,8 @@
 # discord-hsbot
 
+[![test](https://github.com/wasuwasu/discord-hsbot/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/wasuwasu/discord-hsbot/actions/workflows/ci.yml)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/m/wasuwasu/discord-hsbot)
+
 ## Description
 For private discord server, hobby use multi functional bot.
 
