@@ -46,27 +46,28 @@ function getWeatherIconByIconId(iconId: string): string {
     return `http://openweathermap.org/img/wn/${iconId}.png`;
 }
 
-export function getCurrentWeather(cityId: string): any {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getCurrentWeather(cityId: string): Promise<any> {
     const axios = axiosBase.create({
         baseURL: process.env.GOOGLEHOME_NOTIFIER_URL,
         responseType: 'json'
     });
     const result = axios.get(`${weatherBaseurl}/weather?id=${cityId}&units=metric&lang=ja&Mode=json&appid=${weatherApiKey}`)
         .then(function (response) {
-            console.log(JSON.stringify(response.data));
+            logger.debug(JSON.stringify(response.data));
             const res = response.data;
             const message = res.name + "の現在の天気は" + getWeatherStringByConditionId(res.weather[0].id) + "、" + "気温は" + parseInt(res.main.temp).toFixed(1) + "度です。"
-            console.log("Icon:" + getWeatherIconByIconId(res.weather[0].icon))
-            const result =
+            logger.debug("Icon:" + getWeatherIconByIconId(res.weather[0].icon))
+            const result: {[index: string]: string} =
             {
                 message: message,
                 icon: getWeatherIconByIconId(res.weather[0].icon)
             }
-            console.log(JSON.stringify(result))
+            logger.debug(JSON.stringify(result))
             return result;
         })
         .catch(function (error) {
-            console.log(JSON.stringify(error));
+            logger.error(JSON.stringify(error));
         });
     return result;
 }
@@ -96,19 +97,3 @@ export function getCurrentWeatherAll(): Array<MessageEmbed> {
     });
     return [embeddedMessage1, embeddedMessage2];
 }
-
-
-// export async function interactToCommands(interaction: Interaction): Promise<void> {
-//     if (!interaction.isCommand()) {
-//         return;
-//     }
-//     if (interaction.commandName === commandName) {
-//         await interaction.reply('コマンドを実行しました');
-//         speakByGoogleHome(interaction.options.data[0].value as string)
-//     }
-//     if (process.env.DEBUG == 'true') {
-//         logger.debug("-----------------------------")
-//         logger.debug(JSON.stringify(interaction.options));
-//         logger.debug("-----------------------------")
-//     }
-// }
