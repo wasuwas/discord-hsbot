@@ -1,5 +1,6 @@
 import { Client, MessageEmbed, TextChannel } from "discord.js";
 import { logger } from "./logging";
+import { getCurrentDateTime } from "./util";
 
 export function onVoiceStateUpdateEvent(client: Client): void {
     /**
@@ -7,18 +8,29 @@ export function onVoiceStateUpdateEvent(client: Client): void {
      */
     client.on("voiceStateUpdate", function (oldMember, newMember) {
         logger.debug("voiceStateUpdate");
+        if (process.env.DEBUG == "true") {
+            console.log(JSON.stringify(oldMember, undefined, 2));
+            console.log(JSON.stringify(newMember, undefined, 2));
+        }
         const userName = newMember.member.user.username;
         const embeddedMessage = new MessageEmbed()
-            .setTitle('通話状態通知: ' + userName)
-            .setColor(7506394)
+            .setTitle('通話状態通知: ')
+            .setColor("#1ABC9C")
+            .setDescription(userName + ":" + getCurrentDateTime())
             ;
 
-        if (!oldMember.sessionId  && newMember.sessionId) {
-            console.log(userName + "が通話に参加しました。");
-        } else {
-            console.log(userName + "が通話から退出しました。");
+        const channel: TextChannel = this.channels.cache.get(process.env.VOICE_NOTIFICATION_CHANNEL_ID);
+        if (oldMember.sessionId != newMember.sessionId) {
+            if (!oldMember.sessionId && newMember.sessionId) {
+                const message = userName + "が通話に参加しました。";
+                logger.info(message);
+                channel.send(message);
+            } else {
+                const message = userName + "が通話から退出しました。";
+                logger.info(message);
+                channel.send(message);
+            }
         }
-
         if (oldMember.selfMute != newMember.selfMute) {
             embeddedMessage.addField("マイクミュート：", newMember.selfMute ? "有効" : "無効");
         }
@@ -28,7 +40,8 @@ export function onVoiceStateUpdateEvent(client: Client): void {
         if (oldMember.streaming != newMember.streaming) {
             embeddedMessage.addField("画面共有：", newMember.streaming ? "有効" : "無効");
         }
-        const channel: TextChannel = this.channels.cache.get(process.env.BOT_TEST_CHANNEL_ID);
-        channel.send({ embeds: [embeddedMessage] });
+        if (embeddedMessage.fields.length > 0) {
+            channel.send({ embeds: [embeddedMessage] });
+        }
     });
 }

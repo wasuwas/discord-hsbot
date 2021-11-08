@@ -1,12 +1,21 @@
-import { generateDependencyReport} from '@discordjs/voice';
-import { Client, Intents, TextChannel,} from 'discord.js'
+import { generateDependencyReport } from '@discordjs/voice';
+import { Client, Intents, TextChannel, } from 'discord.js'
 import { setActivityOnline } from './activity';
 import { logger } from './logging';
 import { onMessageEvent } from './messageHandler';
-import { defineSlashCommand, interactToCommands } from './slashcommands/googlehomeTts'
+import { defineSlashCommand, interactToCommands } from './slashcommands/commandManager';
+import { getClientStatus } from './util';
 import { onVoiceStateUpdateEvent } from './voiceEventHandler';
 require('dotenv').config();
+
+/**
+ * Refs:
+ * https://gist.github.com/koad/316b265a91d933fd1b62dddfcc3ff584
+ */
+
+// Enable library report
 console.log(generateDependencyReport());
+
 const client = new Client({
   intents: [
     Intents.FLAGS.GUILDS,
@@ -23,28 +32,6 @@ const client = new Client({
     Intents.FLAGS.GUILD_VOICE_STATES
   ]
 });
-
-function getClientStatus(client: Client): void {
-  if (process.env.DEBUG == "true") {
-    logger.debug("-----channel----------");
-    logger.debug(JSON.stringify(client.channels.cache, undefined, 2));
-    logger.debug("-----channel----------");
-    logger.debug("-------guild--------");
-    logger.debug(JSON.stringify(client.guilds.cache, undefined, 2));
-    logger.debug("-------guild--------");
-    logger.debug("-------users--------");
-    logger.debug(JSON.stringify(client.users.cache, undefined, 2));
-    logger.debug("-------users--------");
-    logger.debug("-------voice--------");
-    logger.debug(JSON.stringify(client.voice, undefined, 2));
-    logger.debug("-------voice--------");
-  }
-}
-
-/**
- * Refs:
- * https://gist.github.com/koad/316b265a91d933fd1b62dddfcc3ff584
- */
 
 client.on('ready', () => {
   logger.info(`Logged in as ${client.user.tag}!`);
@@ -94,18 +81,16 @@ oldMember    GuildMember        The member before the presence update
 newMember    GuildMember        The member after the presence update    */
 client.on("presenceUpdate", function (oldMember, newMember) {
   logger.debug("presenceUpdate");
-  console.log(`a guild member's presence changes`);
-  // console.log(JSON.stringify(oldMember, undefined, 2));
-  // console.log(JSON.stringify(newMember, undefined, 2));
-  // const user = getUserById(newMember.userId);
-  const message = "User:" + newMember.user.username + " status =>" + oldMember.status + "->" + newMember.status;
-  logger.debug(message);
-  const channel: TextChannel = this.channels.cache.get(process.env.BOT_TEST_CHANNEL_ID);
-  channel.send(message);
+  if (oldMember.status != newMember.status) {
+    const message = "User: " + newMember.user.username + " status =>" + oldMember.status + "->" + newMember.status;
+    logger.debug(message);
+    const channel: TextChannel = this.channels.cache.get(process.env.BOT_TEST_CHANNEL_ID);
+    channel.send(message);
+  }
 });
 
 client.on("interactionCreate", async (interaction) => {
-  await interactToCommands(interaction);
+  await interactToCommands(client, interaction);
 });
 
 client.login(process.env.DISCORD_BOT_TOKEN);
